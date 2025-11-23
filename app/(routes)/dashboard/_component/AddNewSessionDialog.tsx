@@ -13,9 +13,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { DialogClose } from '@radix-ui/react-dialog'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Loader, Loader2 } from 'lucide-react'
 import axios from 'axios'
-import { doctorAgent } from './DoctorAgentCard'
+import DoctorAgentCard, { doctorAgent } from './DoctorAgentCard'
+import SuggestedDoctorCard from './SuggestedDoctorCard'
+
 
 
 function AddNewSessionDialog() {
@@ -23,6 +25,7 @@ function AddNewSessionDialog() {
     const [note, setNote] = useState<string>();
     const [loading, setLoading] = useState(false);
     const [suggestedDoctor, SetsuggestedDoctor] = useState<doctorAgent[]>()
+    const [selectedDoctor, setSelectedDoctor] = useState<doctorAgent>()
 
     const OnclickNext = async () => {
         setLoading(true);
@@ -31,6 +34,24 @@ function AddNewSessionDialog() {
         });
         console.log(result.data);
         SetsuggestedDoctor(result.data);
+        setLoading(false)
+    }
+
+    const onStartConsultation = async () => {
+        setLoading(true)
+        // save all the data into the database 
+        const result = await axios.post('/api/session-chat', {
+            notes: note,
+            selectedDoctor: selectedDoctor
+        })
+
+        console.log(result.data)
+        if (result.data?.sessionId) {
+            console.log("sesssion id is : ", result.data.sessionId)
+
+            // Route new conversation Screen 
+
+        }
         setLoading(false)
     }
 
@@ -43,19 +64,49 @@ function AddNewSessionDialog() {
                 <DialogHeader>
                     <DialogTitle>Add Basic Details</DialogTitle>
                     <DialogDescription asChild>
-                        <div>
-                            <h2>Add Symtoms and any Other Details</h2>
-                            <Textarea placeholder='Add more Details here...'
-                                className='h-[200px] mt-2'
-                                onChange={(e) => setNote(e.target.value)} />
-                        </div>
+
+                        {!suggestedDoctor ?
+                            <div>
+                                <h2>Add Symtoms and any Other Details</h2>
+                                <Textarea placeholder='Add more Details here...'
+                                    className='h-[200px] mt-2'
+                                    onChange={(e) => setNote(e.target.value)} />
+                            </div>
+                            :
+                            <div>
+                                <h2>Select the Doctor</h2>
+                                <div className='grid grid-cols-3 gap-2'>
+                                    {/* suggested dcotors */}
+
+                                    {suggestedDoctor.map((doctor, index) => (
+                                        <SuggestedDoctorCard doctorAgent={doctor} key={index}
+                                            setSelectedDoctor={() => setSelectedDoctor(doctor)}
+                                            //@ts-ignore
+                                            selectedDoctor={selectedDoctor}
+                                        />
+                                    ))}
+
+                                </div>
+                            </div>
+                        }
+
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose>
                         <Button variant={'outline'}>Cancel</Button>
                     </DialogClose>
-                    <Button disabled={!note} onClick={() => OnclickNext()}>Next <ArrowRight /></Button>
+
+                    {!suggestedDoctor ?
+                        <Button disabled={!note || loading} onClick={() => OnclickNext()}>
+
+                            Next {loading ? <Loader2 className='animate-spin' /> : <ArrowRight />}</Button>
+                        :
+                        <Button onClick={() => onStartConsultation()}>
+                            Start consultation
+                            {loading ? <Loader2 className='animate-spin' /> : <ArrowRight />}
+                        </Button>
+                    }
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -63,3 +114,4 @@ function AddNewSessionDialog() {
 }
 
 export default AddNewSessionDialog
+
