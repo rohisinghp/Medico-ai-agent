@@ -24,9 +24,7 @@ function MedicalVoiceAgent() {
   const { sessionId } = useParams();
   const [sessionDetail, setSessionDetail] = useState<SessionDetail>()
   const [callStarted, setCallStarted] = useState(false)
-
-  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
-
+  const [vapiInstance, setVapiInstance] = useState<any>();
 
 
 
@@ -43,6 +41,9 @@ function MedicalVoiceAgent() {
   }
 
   const startCall = () => {
+      const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+      setVapiInstance(vapi);
+
     vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
 
     vapi.on('call-start', () => {
@@ -63,6 +64,20 @@ function MedicalVoiceAgent() {
 
   }
 
+  const endCall = ()=>{
+    if(!vapiInstance) return
+
+      vapiInstance.stop();
+
+      vapiInstance.off('call-start');
+      vapiInstance.off('call-end');
+      vapiInstance.off('message');
+
+
+      setCallStarted(false)
+      setVapiInstance(null)
+    
+  };
 
   return (
     <div className='p-5 border rounded-2xl bg-secondary '>
@@ -92,15 +107,12 @@ function MedicalVoiceAgent() {
             !callStarted ?
               <Button onClick={startCall} className='mt-20'> <PhoneCall /> Start Call </Button>
               :
-              <Button variant={'destructive'}> <PhoneOff />  Disconnect Call</Button>
+              <Button variant={'destructive'} onClick={endCall}> <PhoneOff />  Disconnect Call</Button>
 
           }
 
-
         </div>
       }
-
-
 
     </div>
   )
