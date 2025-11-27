@@ -11,7 +11,7 @@ type props = {
 }
 function SuggestedDoctorCard({doctorAgent, setSelectedDoctor, selectedDoctor}: props) {
 
-  console.log(doctorAgent.id);
+  // console.log(doctorAgent.id);
 
   return (
     <div className={`flex flex-col items-center border rounded-2xl shadow p-5

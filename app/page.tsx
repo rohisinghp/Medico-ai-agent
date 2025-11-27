@@ -5,7 +5,10 @@ import { FeaturesBentoGrid } from "./_components/FeaturesBentoGrid";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import logo from "../public/health.png"
+import { useRouter } from "next/navigation";
   
+
+
 
 export default function HeroSectionOne() {
   return (
@@ -109,6 +112,13 @@ export default function HeroSectionOne() {
 }
 
 const Navbar = () => {
+
+const router = useRouter();
+
+const redirectToDashboard = ()=>{
+  router.push('/dashboard')
+}
+
   const {user} = useUser();
   return (
     <nav className="flex w-full items-center justify-between border-t border-b border-neutral-200 px-4 py-4 dark:border-neutral-800">
@@ -129,7 +139,7 @@ const Navbar = () => {
       : 
       <div className="flex items-center gap-4">
           <UserButton/>
-          <Button>DashBoard</Button>
+          <Button onClick={()=> redirectToDashboard()}>DashBoard</Button>
       </div>
 }
     </nav>

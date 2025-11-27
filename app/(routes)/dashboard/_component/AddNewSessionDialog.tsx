@@ -17,6 +17,7 @@ import { ArrowRight, Loader, Loader2 } from 'lucide-react'
 import axios from 'axios'
 import DoctorAgentCard, { doctorAgent } from './DoctorAgentCard'
 import SuggestedDoctorCard from './SuggestedDoctorCard'
+import { useRouter } from 'next/navigation'
 
 
 
@@ -26,13 +27,14 @@ function AddNewSessionDialog() {
     const [loading, setLoading] = useState(false);
     const [suggestedDoctor, SetsuggestedDoctor] = useState<doctorAgent[]>()
     const [selectedDoctor, setSelectedDoctor] = useState<doctorAgent>()
+    const router = useRouter();
 
     const OnclickNext = async () => {
         setLoading(true);
         const result = await axios.post('/api/suggest-doctors', {
             notes: note
         });
-        console.log(result.data);
+        // console.log(result.data);
         SetsuggestedDoctor(result.data);
         setLoading(false)
     }
@@ -50,6 +52,8 @@ function AddNewSessionDialog() {
             console.log("sesssion id is : ", result.data.sessionId)
 
             // Route new conversation Screen 
+
+            router.push('/dashboard/medical-agent/'+result.data.sessionId)
 
         }
         setLoading(false)
@@ -102,7 +106,7 @@ function AddNewSessionDialog() {
 
                             Next {loading ? <Loader2 className='animate-spin' /> : <ArrowRight />}</Button>
                         :
-                        <Button onClick={() => onStartConsultation()}>
+                        <Button disabled={!selectedDoctor || loading} onClick={() => onStartConsultation()}>
                             Start consultation
                             {loading ? <Loader2 className='animate-spin' /> : <ArrowRight />}
                         </Button>
