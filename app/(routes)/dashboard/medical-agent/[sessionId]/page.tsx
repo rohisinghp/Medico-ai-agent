@@ -25,7 +25,8 @@ function MedicalVoiceAgent() {
   const [sessionDetail, setSessionDetail] = useState<SessionDetail>()
   const [callStarted, setCallStarted] = useState(false)
   const [vapiInstance, setVapiInstance] = useState<any>();
-
+  const [currentRoll, setCurrentRoll] = useState<string>()
+  const [liveTranscript, setLiveTranscript] = useState<string>()
 
 
   useEffect(() => {
@@ -58,11 +59,52 @@ function MedicalVoiceAgent() {
 
     vapi.on('message', (message) => {
       if (message.type === 'transcript') {
+        const {role, transcriptType, transcript} = message;
         console.log(`${message.role}: ${message.transcript}`);
+
+        if(transcriptType=='partial'){
+          setLiveTranscript(transcript)
+          setCurrentRoll(role)
+        }
+        else{
+          // final transcript
+        }
       }
     });
-
   }
+
+    // vapiInstance.on('speech-start', () => {
+    //   console.log('Assistant started speaking');
+    //   setCurrentRoll('assistant')
+    // });
+    // vapiInstance.on('speech-end', () => {
+    //   console.log('Assistant stopped speaking');
+    //   setCurrentRoll('user')
+    // });
+
+    useEffect(() => {
+  if (!vapiInstance) return;
+
+  const handleSpeechStart = () => {
+    console.log("Assistant started speaking");
+    setCurrentRoll("assistant");
+  };
+
+  const handleSpeechEnd = () => {
+    console.log("Assistant stopped speaking");
+    setCurrentRoll("user");
+  };
+
+  vapiInstance.on("speech-start", handleSpeechStart);
+  vapiInstance.on("speech-end", handleSpeechEnd);
+
+  return () => {
+    // Cleanup on unmount OR new instance
+    vapiInstance.off("speech-start", handleSpeechStart);
+    vapiInstance.off("speech-end", handleSpeechEnd);
+  };
+}, [vapiInstance]);
+
 
   const endCall = ()=>{
     if(!vapiInstance) return
@@ -100,7 +142,7 @@ function MedicalVoiceAgent() {
 
           <div className='mt-32'>
             <h2 className='text-gray-400'>Assistant Mesaag</h2>
-            <h2 className='text-lg'>User Msg</h2>
+            <h2 className='text-lg'>{currentRoll}  {liveTranscript}</h2>
           </div>
 
           {
