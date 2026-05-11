@@ -61,7 +61,7 @@ function AddNewSessionDialog() {
 
     return (
         <Dialog>
-            <DialogTrigger>
+            <DialogTrigger asChild>
                 <Button className='mt-3'>+ Start a Consultation</Button>
             </DialogTrigger>
             <DialogContent>
@@ -82,7 +82,7 @@ function AddNewSessionDialog() {
                                 <div className='grid grid-cols-3 gap-2'>
                                     {/* suggested dcotors */}
 
-                                    {suggestedDoctor.map((doctor, index) => (
+                                    {Array.isArray(suggestedDoctor) && suggestedDoctor.map((doctor, index) => (
                                         <SuggestedDoctorCard doctorAgent={doctor} key={index}
                                             setSelectedDoctor={() => setSelectedDoctor(doctor)}
                                             //@ts-ignore
@@ -97,7 +97,7 @@ function AddNewSessionDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <DialogClose>
+                    <DialogClose asChild>
                         <Button variant={'outline'}>Cancel</Button>
                     </DialogClose>
 

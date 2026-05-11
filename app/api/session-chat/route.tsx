@@ -1,4 +1,4 @@
-import db from "@/config/db";
+import {db} from "@/config/db";
 import { SessionChatTable } from "@/config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
