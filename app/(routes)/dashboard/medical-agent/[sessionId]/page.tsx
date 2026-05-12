@@ -19,14 +19,20 @@ type SessionDetail = {
   createdOn: string
 }
 
+type messages  ={
+  role: string,
+  text: string
+}
+
 function MedicalVoiceAgent() {
 
   const { sessionId } = useParams();
   const [sessionDetail, setSessionDetail] = useState<SessionDetail>()
   const [callStarted, setCallStarted] = useState(false)
   const [vapiInstance, setVapiInstance] = useState<any>();
-  const [currentRoll, setCurrentRoll] = useState<string>()
+  const [currentRoll, setCurrentRoll] = useState<string| null>()
   const [liveTranscript, setLiveTranscript] = useState<string>()
+  const [messages, setMessages] = useState<messages[]>([])
 
 
   useEffect(() => {
@@ -66,8 +72,12 @@ function MedicalVoiceAgent() {
           setLiveTranscript(transcript)
           setCurrentRoll(role)
         }
-        else{
+        else if(transcriptType=='final'){
           // final transcript
+          setMessages((prev: any)=> [...prev, {role: role, text: transcript}])
+          setLiveTranscript("");
+          setCurrentRoll(null)
+
         }
       }
     });
@@ -140,16 +150,25 @@ function MedicalVoiceAgent() {
           <h2 className='font-bold text-lg'>{sessionDetail?.selectedDoctor?.specialist}</h2>
           <p className='text-sm text-gray-400'>AI Medical Voice Assistant</p>
 
-          <div className='mt-32'>
-            <h2 className='text-gray-400'>Assistant Mesaag</h2>
-            <h2 className='text-lg'>{currentRoll}  {liveTranscript}</h2>
+          <div className='mt-12 overflow-y-auto flex flex-col items-center md:px-28 lg:px-52 xl-px-72'>
+             {messages?.slice(-4).map((msg , index)=>(
+              
+                <h2 className='text-gray-400 p-2' key={index}>
+                  {msg.role === 'user' ? 'You' : 'Assistant'} : {msg.text}
+                </h2>
+              
+             ))}
+            <h2 className='text-gray-400 text-bold'>Assistant Message</h2>
+           {liveTranscript &&  liveTranscript?.length >0 && 
+            <h2 className='text-lg'>{currentRoll} : {liveTranscript}</h2>
+           }
           </div>
 
           {
             !callStarted ?
-              <Button onClick={startCall} className='mt-20'> <PhoneCall /> Start Call </Button>
+              <Button onClick={startCall} className='mt-20 cursor-pointer'> <PhoneCall /> Start Call </Button>
               :
-              <Button variant={'destructive'} onClick={endCall}> <PhoneOff />  Disconnect Call</Button>
+              <Button variant={'destructive'} className='cursor-pointer' onClick={endCall}> <PhoneOff />  Disconnect Call</Button>
 
           }
 

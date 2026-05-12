@@ -56,9 +56,7 @@ export default function HeroSectionOne() {
           }}
           className="relative z-10 mx-auto max-w-xl py-4 text-center text-lg font-normal text-neutral-600 dark:text-neutral-400"
         >
-          With AI, you can launch your website in hours, not days. Try our best
-          in class, state of the art, cutting edge AI tools to get your website
-          up.
+          healthf-Ai is an AI-powered healthcare platform that provides personalized health insights, symptom analysis, and wellness recommendations to help you take control of your health and well-being.
         </motion.p>
         <motion.div
           initial={{
@@ -145,7 +143,7 @@ const RedirectToSignUp = ()=>{
       : 
       <div className="flex items-center gap-4">
           <UserButton/>
-          <Button onClick={()=> redirectToDashboard()}>DashBoard</Button>
+          <Button className="cursor-pointer" onClick={()=> redirectToDashboard()}>DashBoard</Button>
       </div>
 }
     </nav>

@@ -7,9 +7,8 @@ const menuOptions = [
 {
     id: 1,
     name: 'Home',
-    path: '/home'
+    path: '/dashboard'
 },
-
 {
     id: 2,
     name: 'History',
